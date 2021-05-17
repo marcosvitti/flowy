@@ -6,7 +6,8 @@ document.addEventListener("DOMContentLoaded", function() {
     let tempblock2;
     let card = {
         descricao: '',
-        texto: ''
+        texto: '',
+        show: null
     }
 
     flowy(document.getElementById("canvas"), drag, release, snapping, rearrange);
@@ -20,6 +21,10 @@ document.addEventListener("DOMContentLoaded", function() {
 
     async function snapping(drag, first) {
         await get_data_modal();
+
+        if (card.show === false) {
+            return false;
+        }
 
         let grab = drag.querySelector(".grabme");
         grab.parentNode.removeChild(grab);
@@ -138,6 +143,8 @@ document.addEventListener("DOMContentLoaded", function() {
                 document.getElementById("closecard").classList.add("closecard-collapsed-180");
             }, 100);
 
+            hide_properties();
+
             if (document.getElementsByClassName("selectedblock").length > 0) {
                 [document.getElementsByClassName("selectedblock")].map((index) => {index[0].classList.remove("selectedblock")});
             }
@@ -155,6 +162,12 @@ document.addEventListener("DOMContentLoaded", function() {
                 document.getElementById("closecard").classList.remove("closecard-collapsed-180");
                 document.getElementById("closecard").classList.add("closecard-collapsed-0");
             }, 100);
+
+            hide_properties();
+
+            if (document.getElementsByClassName("selectedblock").length > 0) {
+                [document.getElementsByClassName("selectedblock")].map((index) => {index[0].classList.remove("selectedblock")});
+            }
         }
     });
 
@@ -207,9 +220,11 @@ document.addEventListener("DOMContentLoaded", function() {
                 if (document.getElementById('descricao-card').value && document.getElementById('texto-card').value) {
                     card.descricao = document.getElementById('descricao-card').value;
                     card.texto = document.getElementById('texto-card').value;
+                    card.show = true;
                     document.getElementById('descricao-card').value = '';
                     document.getElementById('texto-card').value = '';
                 } else {
+                    card.show = false;
                     aux = document.getElementsByClassName('block');
                     deletar = aux[aux.length - 1].children['blockid'];
                     flowy.deleteBlock(deletar ? deletar.value : '');
